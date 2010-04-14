@@ -1,1 +1,0 @@
-[<?php foreach($items as $item): ?>{"caption":"<?php echo $item->title;?>", "value":<?php echo $item->id;?>},<?php endforeach;?>]
