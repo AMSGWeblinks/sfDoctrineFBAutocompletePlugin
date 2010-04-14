@@ -51,6 +51,8 @@ class sfWidgetFormDoctrineFBAutocompleter extends sfWidgetFormDoctrineChoice
     <script type="text/javascript">
       
       jQuery(document).ready(function() {
+        
+        jQuery("#%id% option").attr('selected','selected');
         jQuery("#%id%").fcbkcomplete({
             %json_url%
             %cache%
@@ -116,7 +118,7 @@ EOF
     $delay              = $this->getOption('delay') ? 'delay : "'.$this->getOption('delay').'",' : '' ;
 
    
-    $associatedWidget = new sfWidgetFormSelect(array('multiple' => false, 'choices' => $associated));
+    $associatedWidget = new sfWidgetFormSelect(array('multiple' => true, 'choices' => $associated ));
     
     return strtr($this->getOption('template'), array(
       '%id%'                => $this->generateId($name),
