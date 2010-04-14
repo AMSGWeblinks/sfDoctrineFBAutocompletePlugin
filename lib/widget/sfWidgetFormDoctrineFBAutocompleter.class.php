@@ -49,25 +49,9 @@ class sfWidgetFormDoctrineFBAutocompleter extends sfWidgetFormDoctrineChoice
     $this->addOption('template', <<<EOF
     %associated%
     <script type="text/javascript">
-      
       jQuery(document).ready(function() {
-        
         jQuery("#%id% option").attr('selected','selected');
-        jQuery("#%id%").fcbkcomplete({
-            %json_url%
-            %cache%
-            %newel%
-            %firstselected%
-            %filter_case%
-            %filter_hide%
-            %filter_selected%
-            %complete_text%
-            %maxshownitems%
-            %maxitems%
-            %onselect%
-            %onremove%
-            %delay%
-        })
+        jQuery("#%id%").fcbkcomplete({%config%});
       });
     </script>
 EOF
@@ -117,24 +101,15 @@ EOF
     $onremove           = $this->getOption('onremove') ? 'onremove : "'.$this->getOption('onremove').'",' : '' ;
     $delay              = $this->getOption('delay') ? 'delay : "'.$this->getOption('delay').'",' : '' ;
 
-   
+    $config = $json_url.$cache.$newel.$firstselected.$filter_case.$filter_hide.$filter_selected.$complete_text.$maxshownitems.$maxitems.$onselect.$onremove.$delay;
+    
+    $config = substr($config,0,-1);
+    
     $associatedWidget = new sfWidgetFormSelect(array('multiple' => true, 'choices' => $associated ));
     
     return strtr($this->getOption('template'), array(
       '%id%'                => $this->generateId($name),
-      '%json_url%'          => $json_url,
-      '%cache%'             => $cache,
-      '%newel%'             => $newel,
-      '%firstselected%'     => $firstselected,
-      '%filter_case%'       => $filter_case,
-      '%filter_hide%'       => $filter_hide,
-      '%filter_selected%'   => $filter_selected,
-      '%complete_text%'     => $complete_text,
-      '%maxshownitems%'     => $maxshownitems,
-      '%maxitems%'          => $maxitems,
-      '%onselect%'          => $onselect,
-      '%onremove%'          => $onremove,
-      '%delay%'             => $delay,
+      '%config%'          => $config,
       '%associated%'        => $associatedWidget->render($name)
     ));
 

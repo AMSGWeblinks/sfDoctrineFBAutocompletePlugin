@@ -16,7 +16,7 @@ abstract class BasesfDoctrineFBAutocompleteJsonActions extends sfActions
             throw new sfException('sfDoctrineFBAutocompleteJson : Model is not defined');
         }
         $this->items = Doctrine_Core::getTable( $request->getParameter('model') )->findAll();
-        
+       
         $this->setLayout(false);
         $request->setParameter('sf_format','json');
     }
