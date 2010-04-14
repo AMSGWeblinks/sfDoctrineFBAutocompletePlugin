@@ -46,7 +46,30 @@ class sfWidgetFormDoctrineFBAutocompleter extends sfWidgetFormDoctrineChoice
     $this->addOption('onselect', false);
     $this->addOption('onremove', false);
     $this->addOption('delay ', false);
-
+    $this->addOption('template', <<<EOF
+    %associated%
+    <script type="text/javascript">
+      
+      jQuery(document).ready(function() {
+        jQuery("#%id%").fcbkcomplete({
+            %json_url%
+            %cache%
+            %newel%
+            %firstselected%
+            %filter_case%
+            %filter_hide%
+            %filter_selected%
+            %complete_text%
+            %maxshownitems%
+            %maxitems%
+            %onselect%
+            %onremove%
+            %delay%
+        })
+      });
+    </script>
+EOF
+);
 
     parent::configure($options, $attributes);
   }
@@ -63,21 +86,19 @@ class sfWidgetFormDoctrineFBAutocompleter extends sfWidgetFormDoctrineChoice
    */
   public function render($name, $value = null, $attributes = array(), $errors = array())
   {
-        if (is_null($value)){$value = array();}
-        $choices = $this->getOption('choices');
-        
-        if ($choices instanceof sfCallable)
-        {
-          $choices = $choices->call();
-        }
-        $associated = array();
-        foreach ($choices as $key => $option)
-        {
-          if (in_array(strval($key), $value))
-          {
-            $associated[$key] = $option;
-          }
-        }
+    if (is_null($value)){$value = array();}
+
+    $choices = $this->getChoices();
+    
+    $associated = array();
+    
+    foreach ($choices as $key => $option)
+    {
+      if (in_array(strval($key), $value))
+      {
+        $associated[$key] = $option;
+      }
+    }
         
     $url = str_replace('%model%',$this->getOption('model') , $this->getOption('json_url'));
     $json_url           = 'json_url : "' . $url  .'",';
@@ -94,45 +115,28 @@ class sfWidgetFormDoctrineFBAutocompleter extends sfWidgetFormDoctrineChoice
     $onremove           = $this->getOption('onremove') ? 'onremove : "'.$this->getOption('onremove').'",' : '' ;
     $delay              = $this->getOption('delay') ? 'delay : "'.$this->getOption('delay').'",' : '' ;
 
-    return $this->renderTag('input', array('type' => 'text', 'name' => $name, 'value' => $value)).
-           sprintf(<<<EOF
-<script type="text/javascript">
-  jQuery(document).ready(function() {
-    jQuery("#%s").fcbkcomplete({
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        %s
-        
-    })
-  });
-</script>
-EOF
-      ,
-      $this->generateId($name),
-      $json_url,
-      $cache,            
-      $newel,             
-      $firstselected,
-      $filter_case   ,     
-      $filter_hide    ,    
-      $filter_selected ,   
-      $complete_text    ,  
-      $maxshownitems     , 
-      $maxitems           ,
-      $onselect           ,
-      $onremove           ,
-     $delay              
-    );
+   
+    $associatedWidget = new sfWidgetFormSelect(array('multiple' => false, 'choices' => $associated));
+    
+    return strtr($this->getOption('template'), array(
+      '%id%'                => $this->generateId($name),
+      '%json_url%'          => $json_url,
+      '%cache%'             => $cache,
+      '%newel%'             => $newel,
+      '%firstselected%'     => $firstselected,
+      '%filter_case%'       => $filter_case,
+      '%filter_hide%'       => $filter_hide,
+      '%filter_selected%'   => $filter_selected,
+      '%complete_text%'     => $complete_text,
+      '%maxshownitems%'     => $maxshownitems,
+      '%maxitems%'          => $maxitems,
+      '%onselect%'          => $onselect,
+      '%onremove%'          => $onremove,
+      '%delay%'             => $delay,
+      '%associated%'        => $associatedWidget->render($name)
+    ));
+
+    
   }
 
   /**
