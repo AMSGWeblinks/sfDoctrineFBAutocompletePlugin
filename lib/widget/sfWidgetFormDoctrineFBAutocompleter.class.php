@@ -104,8 +104,10 @@ EOF
     $config = $json_url.$cache.$newel.$firstselected.$filter_case.$filter_hide.$filter_selected.$complete_text.$maxshownitems.$maxitems.$onselect.$onremove.$delay;
     
     $config = substr($config,0,-1);
+    $multiple = empty($maxitems) || $this->getOption('maxitems') > 1 ;
     
-    $associatedWidget = new sfWidgetFormSelect(array('multiple' => true, 'choices' => $associated ));
+    
+    $associatedWidget = new sfWidgetFormSelect(array('multiple' => , 'choices' => $associated ));
     
     return strtr($this->getOption('template'), array(
       '%id%'                => $this->generateId($name),
